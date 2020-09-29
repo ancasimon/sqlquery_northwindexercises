@@ -53,13 +53,22 @@
 	from [order details] od
 
 	--ANCA: THEN wrap the main query around the one above- which gives me the subset I need! FINAL ANSWER for #3!
-	select orderid, sum(unitTotal) as orderTotalAfterDiscounts
-	from (
-	select od.orderId, od.productId, od.discount,
-		case when od.Discount != 0 then (od.unitprice * od.quantity * od.Discount)
-		else (od.unitprice * od.quantity)	
-		end as unitTotal
-	from [order details] od) orderDiscountCalcsSet -- ANCA: all subqueries wrapped like this need an alias!
+	--the version below is incorrect!!! need to apply the discount as a percentage off!!! keeping it just for future reference!
+	--select orderid, sum(unitTotal) as orderTotalAfterDiscounts
+	--from (
+	--select od.orderId, od.productId, od.discount,
+	--	case when od.Discount != 0 then (od.unitprice * od.quantity * od.Discount)
+	--	else (od.unitprice * od.quantity)	
+	--	end as unitTotal
+	--from [order details] od) orderDiscountCalcsSet -- ANCA: all subqueries wrapped like this need an alias!
+	--group by orderid
+
+	--THE REAL FINAL ANSWER TO #3:
+	--the reason we use "1-discount": 
+	--if the discount is 0, then we multiply by 1-0, which is by 1 so the number stays the same;
+	--if the discount is different than 0, then we multiply for example by 0.85 (which is the remaining amount after 1-0.15) > which is the discounted amount!!!
+	select orderid, sum(od.unitprice * od.quantity * (1-od.Discount)) as orderTotalAfterDiscounts
+	from [order details] od 
 	group by orderid
 
 
