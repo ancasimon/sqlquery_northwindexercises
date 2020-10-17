@@ -42,28 +42,10 @@
 	--Anca: testing to check where the discount is 0:
 	select orders.orderid, orders.customerid, orders.orderdate, (od.unitprice * od.quantity) as undiscountedSubtotal, od.discount
 	from orders
-	join [order details] od
-	on orders.orderid = od.orderid
+		join [order details] od
+		on orders.orderid = od.orderid
 
-		--ANCA: displaying all individual order details and calculating the total with a CASE statement for when discount is 0 or not:
-	select od.orderId, od.productId, od.discount,
-		case when od.Discount != 0 then (od.unitprice * od.quantity * od.Discount)
-		else (od.unitprice * od.quantity)	
-		end as unitTotal
-	from [order details] od
-
-	--ANCA: THEN wrap the main query around the one above- which gives me the subset I need! FINAL ANSWER for #3!
-	--the version below is incorrect!!! need to apply the discount as a percentage off!!! keeping it just for future reference!
-	--select orderid, sum(unitTotal) as orderTotalAfterDiscounts
-	--from (
-	--select od.orderId, od.productId, od.discount,
-	--	case when od.Discount != 0 then (od.unitprice * od.quantity * od.Discount)
-	--	else (od.unitprice * od.quantity)	
-	--	end as unitTotal
-	--from [order details] od) orderDiscountCalcsSet -- ANCA: all subqueries wrapped like this need an alias!
-	--group by orderid
-
-	--THE REAL FINAL ANSWER TO #3:
+	--FINAL ANSWER TO #3:
 	--the reason we use "1-discount": 
 	--if the discount is 0, then we multiply by 1-0, which is by 1 so the number stays the same;
 	--if the discount is different than 0, then we multiply for example by 0.85 (which is the remaining amount after 1-0.15) > which is the discounted amount!!!
@@ -111,14 +93,14 @@
 	select CategoryID, CategoryName, sum(unitTotal) as totalAmountSoldByCategoryAfterDiscounts, sum(unitCount) as totalUnitsSold
 	from (
 			select od.orderId, od.productId, od.discount, p.CategoryID, c.categoryName, od.Quantity as unitCount,
-		case when od.Discount != 0 then (od.unitprice * od.quantity * od.Discount)
-		else (od.unitprice * od.quantity)	
-		end as unitTotal
-	from [order details] od 
-		join Products p
-		on od.ProductID = p.ProductID
-			join Categories c
-			on p.CategoryID = c.CategoryID) unitTotalsAfterDiscounts
+			case when od.Discount != 0 then (od.unitprice * od.quantity * od.Discount)
+			else (od.unitprice * od.quantity)	
+			end as unitTotal
+			from [order details] od 
+				join Products p
+				on od.ProductID = p.ProductID
+					join Categories c
+					on p.CategoryID = c.CategoryID) unitTotalsAfterDiscounts
 	group by CategoryID,CategoryName
 	
 
@@ -135,10 +117,10 @@
 		case when od.Discount != 0 then (od.unitprice * od.quantity * od.Discount)
 		else (od.unitprice * od.quantity)	
 		end as unitTotal
-	from [order details] od
-		join Orders o
-		on o.OrderID = od.OrderID
-	) orderDiscountCalcsSet -- ANCA: all subqueries wrapped like this need an alias!
+		from [order details] od
+			join Orders o
+			on o.OrderID = od.OrderID
+		) orderDiscountCalcsSet -- ANCA: all subqueries wrapped like this need an alias!
 	where DATEPART(YEAR, orderdate) = '1997'
 	group by DATEPART(YEAR, orderdate), DATEPART(QUARTER, orderdate)
 	order by orderTotalsByDate desc
