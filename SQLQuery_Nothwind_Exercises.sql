@@ -7,7 +7,7 @@
 	select orders.orderid, orders.customerid, orders.orderdate, sum(od.unitprice * od.quantity) as undiscountedSubtotal
 	from orders
 		join [order details] od
-		on orders.orderid = od.orderid
+			on orders.orderid = od.orderid
 	group by orders.orderid, orders.CustomerID, orders.OrderDate
 
     --2. What products are currently for sale (not discontinued)?
@@ -43,7 +43,7 @@
 	select orders.orderid, orders.customerid, orders.orderdate, (od.unitprice * od.quantity) as undiscountedSubtotal, od.discount
 	from orders
 		join [order details] od
-		on orders.orderid = od.orderid
+			on orders.orderid = od.orderid
 
 	--FINAL ANSWER TO #3:
 	--the reason we use "1-discount": 
@@ -72,9 +72,9 @@
 	select c.CategoryName, c.CategoryID, sum(od.quantity) as numberOfUnitsSold, sum(od.unitprice * od.Quantity) as totalAmountSoldBeforeDiscounts
 	from [Order Details] od
 		join Products p
-		on od.ProductID = p.ProductID
-			join Categories c
-			on p.categoryId = c.categoryId
+			on od.ProductID = p.ProductID
+				join Categories c
+					on p.categoryId = c.categoryId
 	group by c.CategoryID, c.CategoryName
 
 
@@ -85,9 +85,9 @@
 		end as unitTotal
 	from [order details] od 
 		join Products p
-		on od.ProductID = p.ProductID
-			join Categories c
-			on p.CategoryID = c.CategoryID
+			on od.ProductID = p.ProductID
+				join Categories c
+					on p.CategoryID = c.CategoryID
 
 	--FINAL ANSWER FOR #4
 	select CategoryID, CategoryName, sum(unitTotal) as totalAmountSoldByCategoryAfterDiscounts, sum(unitCount) as totalUnitsSold
@@ -98,9 +98,9 @@
 			end as unitTotal
 			from [order details] od 
 				join Products p
-				on od.ProductID = p.ProductID
-					join Categories c
-					on p.CategoryID = c.CategoryID) unitTotalsAfterDiscounts
+					on od.ProductID = p.ProductID
+						join Categories c
+							on p.CategoryID = c.CategoryID) unitTotalsAfterDiscounts
 	group by CategoryID,CategoryName
 	
 
@@ -119,7 +119,7 @@
 		end as unitTotal
 		from [order details] od
 			join Orders o
-			on o.OrderID = od.OrderID
+				on o.OrderID = od.OrderID
 		) orderDiscountCalcsSet -- ANCA: all subqueries wrapped like this need an alias!
 	where DATEPART(YEAR, orderdate) = '1997'
 	group by DATEPART(YEAR, orderdate), DATEPART(QUARTER, orderdate)
